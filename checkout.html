@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --accent: #5a5a5a;
+      --accent-light: #bdbdbd;
+      --accent-dark: #222;
+      --bg: #ededed;
+      --bg-light: #f7f7f7;
+      --bg-dark: #d3d3d3;
+      --text: #222;
+      --light: #fff;
+      --shadow: 0 4px 24px rgba(60,60,60,0.08);
+      --primary: #6c63ff;
+      --primary-dark: #574ee0;
+      --danger: #ff4d4d;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background: var(--light, #fff);
+      color: var(--accent-dark, #222);
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      border-bottom: 1px solid var(--bg-dark, #d3d3d3);
+      border-radius: 0 0 24px 24px;
+      margin-bottom: 0;
+    }
+
+    .navbar .logo {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--accent-dark, #222);
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .navbar .nav-links a {
+      color: var(--accent, #5a5a5a);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.05rem;
+      transition: color 0.2s;
+      padding: 6px 14px;
+      border-radius: 6px;
+    }
+
+    .navbar .nav-links a:hover {
+      color: var(--accent-dark, #222);
+      background: var(--accent-light, #bdbdbd);
+    }
+
+    .navbar .nav-links button {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--bg-dark, #d3d3d3);
+      background: var(--accent, #5a5a5a);
+      color: var(--light, #fff);
+      font-weight: 600;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, border 0.3s;
+      margin-left: 10px;
+    }
+
+    .navbar .nav-links button:hover {
+      background: var(--accent-dark, #222);
+      color: var(--light, #fff);
+      border: 1px solid var(--accent-light, #bdbdbd);
+    }
+
+    h1 {
+      color: var(--primary);
+      text-align: center;
+      margin: 38px 0 18px 0;
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .section {
+      background: var(--light);
+      padding: 24px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section h2 {
+      color: var(--accent-dark);
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--light);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--bg-dark);
+      text-align: left;
+      font-size: 1rem;
+    }
+
+    th {
+      background: var(--accent);
+      color: var(--light);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: var(--bg-light);
+    }
+
+    #checkoutTotal {
+      font-weight: bold;
+      font-size: 1.08rem;
+      color: var(--accent-dark);
+      margin-top: 10px;
+      text-align: right;
+    }
+
+    #userInfo p {
+      margin: 4px 0;
+      font-size: 1rem;
+      color: var(--accent-dark);
+    }
+
+    .edit-btn {
+      background-color: #ff9800;
+      margin-left: 10px;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .edit-btn:hover {
+      background-color: #e68900;
+    }
+
+    .payment-method label {
+      font-size: 1rem;
+      color: var(--accent-dark);
+      margin-right: 18px;
+      cursor: pointer;
+    }
+
+    .payment-method input[type="radio"] {
+      margin-right: 6px;
+      accent-color: var(--primary);
+    }
+
+    .confirm-btn {
+      padding: 12px 32px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(120,120,120,0.07);
+      transition: background 0.2s;
+      margin-top: 18px;
+    }
+    .confirm-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    @media (max-width: 700px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 18px 14px;
+        border-radius: 0 0 16px 16px;
+      }
+      .navbar .nav-links {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
+        width: 100%;
+      }
+      .navbar .logo {
+        font-size: 1.4rem;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      .section {
+        padding: 12px;
+        border-radius: 10px;
+      }
+      th, td {
+        padding: 8px;
+        font-size: 0.95rem;
+      }
+      .confirm-btn {
+        width: 100%;
+        margin-top: 12px;
+        padding: 12px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="logo">📦 GadgetGo</div>
+    <div class="nav-links">
+      <a href="home.html">🏠 Home</a>
+      <a href="cart.html">🛒 Cart</a>
+      <a href="createproduct.html">➕ Create Product</a>
+      <a href="viewproduct.html">📋 View Products</a>
+      <a href="admin-users.html" id="editUsersLink" style="display: none;">Edit Users</a>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <h1>🧾 Checkout</h1>
+
+  <div class="section" id="cartSummary">
+    <h2>Cart Summary</h2>
+    <div id="cartItems"></div>
+    <p id="checkoutTotal"></p>
+  </div>
+
+  <div class="section" id="userDetails">
+    <h2>Customer Information</h2>
+    <div id="userInfo"></div>
+    <button class="edit-btn" onclick="window.location.href='editProfile.html'">Edit Info</button>
+  </div>
+
+  <div class="section payment-method">
+    <h2>Payment Method</h2>
+    <label><input type="radio" name="paymentMethod" value="cod" checked> Cash on Delivery (COD)</label>
+    <label><input type="radio" name="paymentMethod" value="online"> Online Payment</label>
+  </div>
+
+  <div style="text-align: center;">
+    <button class="confirm-btn" onclick="confirmCheckout()">Confirm Purchase</button>
+  </div>
+
+  <script>
+    function logout() {
+      fetch("/api/logout", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      })
+      .then(() => {
+        localStorage.removeItem("token");
+        alert("You have been logged out");
+        window.location.href = "/login.html";
+      })
+      .catch(() => {
+        alert("Logout failed");
+      });
+    }
+
+    async function loadCheckout() {
+      const userID = localStorage.getItem("userID");
+      if (!userID) return alert("You are not logged in.");
+
+      // Fetch Cart
+      const cartRes = await fetch(`/api/cart/${userID}`);
+      const cartData = await cartRes.json();
+      const { items, totalAmount } = cartData;
+
+      if (!items.length) {
+        document.getElementById("cartItems").innerHTML = "<p>Your cart is empty.</p>";
+        return;
+      }
+
+      let html = `<table><tr><th>Name</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr>`;
+      items.forEach(item => {
+        html += `
+          <tr>
+            <td>${item.name}</td>
+            <td>₱${item.price}</td>
+            <td>${item.quantity}</td>
+            <td>₱${(item.totalItem).toFixed(2)}</td>
+          </tr>`;
+      });
+      html += `</table>`;
+      document.getElementById("cartItems").innerHTML = html;
+      document.getElementById("checkoutTotal").innerText = "Total: ₱" + totalAmount.toFixed(2);
+
+      // Fetch User Info
+      const userRes = await fetch(`/api/users/${userID}`);
+      if (userRes.ok) {
+        const user = await userRes.json();
+        document.getElementById("userInfo").innerHTML = `
+          <p><strong>Name:</strong> ${user.name}</p>
+          <p><strong>Email:</strong> ${user.email}</p>
+          <p><strong>Contact:</strong> ${user.contactNumber}</p>
+          <p><strong>Address:</strong> ${user.address}</p>
+        `;
+      } else {
+        document.getElementById("userInfo").innerHTML = "<p>Unable to load user info.</p>";
+      }
+    }
+
+    async function confirmCheckout() {
+      const userID = localStorage.getItem("userID");
+      if (!userID) return alert("You are not logged in.");
+
+      const method = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+      // Fetch user details
+      const userRes = await fetch(`/api/users/${userID}`);
+      if (!userRes.ok) return alert("Unable to fetch user details.");
+      const user = await userRes.json();
+
+      if (!user.address) {
+        alert("No address found. Please update your profile.");
+        return;
+      }
+
+      // Fetch cart items
+      const cartRes = await fetch(`/api/cart/${userID}`);
+      if (!cartRes.ok) return alert("Unable to fetch cart items.");
+      const cart = await cartRes.json();
+
+      const confirmOrder = confirm(
+        `You selected "${method.toUpperCase()}" and will ship to this address:\n\n${user.address}\n\nDo you want to place the order?`
+      );
+      if (!confirmOrder) return;
+
+      // Send order to backend
+      const res = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userID,
+          paymentMethod: method,
+          address: user.address,
+          items: cart.items,
+          userEmail: user.email
+        })
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        window.location.href = `/receipt.html?orderID=${result.orderID}`;
+      } else {
+        alert("Failed to place order.");
+      }
+    }
+
+    // Show Edit Users link for admin
+    window.onload = function() {
+      const role = localStorage.getItem("role");
+      if (role === "admin") {
+        document.getElementById("editUsersLink").style.display = "block";
+      }
+    }
+
+    loadCheckout();
+  </script>
+
+</body>
+</html>

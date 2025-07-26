@@ -1,0 +1,121 @@
+<!-- header.html -->
+<div class="navbar">
+  <div class="logo">📦 GadgetGo</div>
+  <div class="nav-links">
+    <a href="home.html">🏠 Home</a>
+    <a href="cart.html">🛒 Cart <span id="cart-count">(0)</span></a>
+    <a href="createproduct.html">➕ Create Product</a>
+    <a href="viewproduct.html">📋 View Products</a>
+    <a href="admin-users.html" id="editUsersLink" style="display: none;">Edit Users</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<script>
+  function logout() {
+    $.ajax({
+      url: "/api/logout",
+      type: "POST",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      },
+      success: () => {
+        localStorage.removeItem("token");
+        alert("You have been logged out");
+        window.location.href = "/landing.html";
+      },
+      error: () => {
+        alert("Logout failed");
+      }
+    });
+  }
+</script>
+<script>
+  function updateCartIndicator() {
+    const userID = localStorage.getItem("userID");
+    if (!userID) return;
+
+    fetch(`/api/cart/${userID}`)
+      .then(res => res.json())
+      .then(data => {
+        const count = data.items.reduce((acc, item) => acc + item.quantity, 0);
+        document.getElementById("cart-count").textContent = `(${count})`;
+      });
+  }
+  updateCartIndicator();
+</script>
+
+<style>
+  .navbar {
+    background: var(--light, #fff);
+    color: var(--accent-dark, #222);
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 24px rgba(60,60,60,0.08);
+    border-bottom: 1px solid var(--bg-dark, #d3d3d3);
+    border-radius: 0 0 24px 24px;
+    margin-bottom: 0;
+  }
+
+  .navbar .logo {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--accent-dark, #222);
+  }
+
+  .navbar .nav-links {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .navbar .nav-links a {
+    color: var(--accent, #5a5a5a);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.05rem;
+    transition: color 0.2s;
+    padding: 6px 14px;
+    border-radius: 6px;
+  }
+
+  .navbar .nav-links a:hover {
+    color: var(--accent-dark, #222);
+    background: var(--accent-light, #bdbdbd);
+  }
+
+  .navbar .nav-links button {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--bg-dark, #d3d3d3);
+    background: var(--accent, #5a5a5a);
+    color: var(--light, #fff);
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, border 0.3s;
+    margin-left: 10px;
+  }
+
+  .navbar .nav-links button:hover {
+    background: var(--accent-dark, #222);
+    color: var(--light, #fff);
+    border: 1px solid var(--accent-light, #bdbdbd);
+  }
+
+  @media (max-width: 700px) {
+    .navbar {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 18px 14px;
+      border-radius: 0 0 16px 16px;
+    }
+    .navbar .nav-links {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+</style>

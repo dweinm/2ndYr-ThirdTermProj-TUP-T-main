@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Product</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --accent: #5a5a5a;
+      --accent-light: #bdbdbd;
+      --accent-dark: #222;
+      --bg: #ededed;
+      --bg-light: #f7f7f7;
+      --bg-dark: #d3d3d3;
+      --text: #222;
+      --light: #fff;
+      --shadow: 0 4px 24px rgba(60,60,60,0.08);
+      --primary: #6c63ff;
+      --primary-dark: #574ee0;
+      --muted: #777;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #header-container {
+      width: 100%;
+      position: static;
+      top: unset;
+      left: unset;
+      height: auto;
+      z-index: 100;
+      margin-bottom: 0;
+    }
+
+    .form-card {
+      background: var(--light);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 650px;
+      box-shadow: var(--shadow);
+      margin-top: 40px;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--primary);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: var(--accent-dark);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--bg-dark);
+      background: var(--bg-light);
+      transition: border 0.2s;
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 8px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: var(--light);
+      outline: none;
+    }
+
+    .full-width {
+      grid-column: span 2;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      background: var(--primary);
+      color: var(--light);
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+      box-shadow: 0 2px 8px rgba(120,120,120,0.07);
+    }
+
+    button[type="submit"]:hover {
+      background: var(--primary-dark);
+    }
+
+    #status {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+      color: #388e3c;
+    }
+
+    @media (max-width: 700px) {
+      .form-card {
+        padding: 16px;
+        margin-top: 20px;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .full-width {
+        grid-column: span 1;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header-container"></div>
+
+  <div class="form-card">
+    <h1>Create Product</h1>
+    <form id="productForm" enctype="multipart/form-data">
+      <div class="form-grid">
+        <div>
+          <label for="name">Name</label>
+          <input type="text" name="name" required />
+        </div>
+        <div>
+          <label for="brand">Brand</label>
+          <input type="text" name="brand" required />
+        </div>
+        <div>
+          <label for="price">Price</label>
+          <input type="number" name="price" required />
+        </div>
+        <div>
+          <label for="ram">RAM</label>
+          <input type="text" name="ram" required />
+        </div>
+        <div>
+          <label for="storage">Storage</label>
+          <input type="text" name="storage" required />
+        </div>
+        <div>
+          <label for="availability">Availability</label>
+          <select name="availability" required>
+            <option value="1">Available</option>
+            <option value="0">Unavailable</option>
+          </select>
+        </div>
+        <div class="full-width">
+          <label for="images">Choose Product Images</label>
+          <input type="file" name="images" accept="image/*" multiple required />
+        </div>
+        <div class="full-width">
+          <label for="mainPhoto">Main Photo Index (e.g. 1 for first)</label>
+          <input type="number" name="mainPhoto" min="1" required />
+        </div>
+        <div class="full-width">
+          <label for="quantity">Quantity</label>
+          <input type="number" name="quantity" required />
+        </div>
+        <div class="full-width">
+          <label for="description">Description</label>
+          <textarea name="description" rows="4" required></textarea>
+        </div>
+      </div>
+      <button type="submit">Submit Product</button>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById("productForm");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch("/api/products", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          window.location.href = "/viewproduct.html";
+        } else {
+          status.textContent = result.message || "Error creating product.";
+          status.style.color = "red";
+        }
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Server error. Please try again.";
+        status.style.color = "red";
+      }
+    });
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $("#header-container").load("header.html", function () {
+      const role = localStorage.getItem("role");
+      if (role === "admin") {
+        document.getElementById("editUsersLink").style.display = "inline-block";
+      }
+    });
+  </script>
+
+  <script>
+    // Load header then check role
+    $("#header-container").load("header.html", function () {
+      const role = localStorage.getItem("role");
+
+      if (role === "admin") {
+        document.getElementById("editUsersLink").style.display = "inline-block";
+      }
+    });
+  </script>
+  
+</body>
+</html>

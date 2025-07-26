@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home | ProductApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --accent: #5a5a5a;
+      --accent-light: #bdbdbd;
+      --accent-dark: #222;
+      --bg: #ededed;
+      --bg-light: #f7f7f7;
+      --bg-dark: #d3d3d3;
+      --text: #222;
+      --light: #fff;
+      --shadow: 0 4px 24px rgba(60,60,60,0.08);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    #header-container {
+      margin-bottom: 0;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 38px 0 18px 0;
+      color: var(--accent-dark);
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 32px;
+      padding: 40px 40px 20px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .product-card {
+      background: var(--light);
+      border-radius: 16px;
+      padding: 24px 18px 18px 18px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: transform 0.18s, box-shadow 0.18s;
+      color: inherit;
+      border: 1px solid var(--bg-dark);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 12px 32px rgba(60,60,60,0.13);
+      border-color: var(--accent-light);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: var(--bg-light);
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(120,120,120,0.07);
+    }
+
+    .product-card h3 {
+      margin: 10px 0 4px;
+      font-size: 1.18rem;
+      color: var(--accent-dark);
+      font-weight: 600;
+    }
+
+    .product-card p {
+      font-size: 0.98rem;
+      color: #444;
+      margin: 4px 0;
+    }
+
+    .product-card .price {
+      color: var(--accent);
+      font-size: 1.08rem;
+      font-weight: bold;
+      margin: 8px 0 2px 0;
+    }
+
+    .product-card .status {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #388e3c;
+    }
+
+    .product-card .status.unavailable {
+      color: #d32f2f;
+    }
+
+    button {
+      margin: 6px 4px 0;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.98rem;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(120,120,120,0.07);
+    }
+
+    button:hover {
+      background-color: var(--accent-dark);
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #d32f2f;
+    }
+
+    @media (max-width: 700px) {
+      .product-list {
+        padding: 18px 8px;
+        gap: 18px;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header-container"></div>
+
+  <h1>Welcome to GadgetGo🛍️</h1>
+  <div id="productList" class="product-list"></div>
+  <p id="status"></p>
+
+  <script>
+    async function loadProducts() {
+      const productList = document.getElementById("productList");
+      const status = document.getElementById("status");
+      productList.innerHTML = "<p>Loading...</p>";
+
+      try {
+        const res = await fetch("/api/products");
+        const products = await res.json();
+
+        if (!products.length) {
+          productList.innerHTML = "<p>No products available.</p>";
+          return;
+        }
+
+        productList.innerHTML = "";
+
+        products.forEach(product => {
+          const card = document.createElement("div");
+          card.className = "product-card";
+
+          let mainImage = "https://via.placeholder.com/240x160?text=No+Image";
+          if (product.images?.length > 0) {
+            const main = product.images.find(img => img.isMain == 1);
+            mainImage = main ? `/uploads/${main.filename}` : `/uploads/${product.images[0].filename}`;
+          }
+
+          card.innerHTML = `
+            <img src="${mainImage}" alt="${product.name}" />
+            <h3>${product.name}</h3>
+            <p><strong>Brand:</strong> ${product.brand}</p>
+            <p class="price"><strong>Price:</strong> ₱${product.price}</p>
+            <p><strong>RAM:</strong> ${product.ram}</p>
+            <p><strong>Storage:</strong> ${product.storage}</p>
+            <p class="status ${product.availability == 1 ? "" : "unavailable"}"><strong>Status:</strong> ${product.availability == 1 ? "Available" : "Unavailable"}</p>
+            <button onclick="addToCart(${product.productID})">Add to Cart</button>
+            <button onclick="viewProduct(${product.productID})">View</button>
+            <button onclick="buyNow(${product.productID})">Buy Now</button>
+          `;
+
+          productList.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Failed to load products.";
+      }
+    }
+
+    function addToCart(productID) {
+      const userID = localStorage.getItem("userID");
+      if (!userID) {
+        alert("You must be logged in to add to cart.");
+        return;
+      }
+
+      fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userID, productID, quantity: 1 }),
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to add to cart");
+        return res.json();
+      })
+      .then(() => {
+        alert("Product added to cart!");
+        updateCartIndicator(); // 🔄 update cart indicator in the header
+      })
+      .catch(err => {
+        console.error("Error adding to cart:", err);
+        alert("Failed to add to cart.");
+      });
+    }
+
+    function viewProduct(productID) {
+      window.location.href = `/productDescription.html?id=${productID}`;
+    }
+
+    function buyNow(productId) {
+      localStorage.setItem("selectedProduct", productId);
+      window.location.href = `/checkout.html?id=${productId}`;
+    }
+
+    loadProducts();
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Load header then check role
+    $("#header-container").load("header.html", function () {
+      const role = localStorage.getItem("role");
+      if (role === "admin") {
+        document.getElementById("editUsersLink").style.display = "inline-block";
+      }
+    });
+  </script>
+
+</body>
+</html>

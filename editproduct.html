@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Product</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --accent: #5a5a5a;
+      --accent-light: #bdbdbd;
+      --accent-dark: #222;
+      --bg: #ededed;
+      --bg-light: #f7f7f7;
+      --bg-dark: #d3d3d3;
+      --card: #fff;
+      --text: #222;
+      --muted: #777;
+      --primary: #6c63ff;
+      --primary-dark: #574ee0;
+      --shadow: 0 4px 24px rgba(60,60,60,0.08);
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #header-container {
+      width: 100%;
+      margin-bottom: 0;
+    }
+
+    .form-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 650px;
+      box-shadow: var(--shadow);
+      margin-top: 40px;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--primary);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: var(--accent-dark);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--bg-dark);
+      background: var(--bg-light);
+      transition: border 0.2s;
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 8px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: var(--light);
+      outline: none;
+    }
+
+    .full-width {
+      grid-column: span 2;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      background: var(--primary);
+      color: var(--light);
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+      box-shadow: 0 2px 8px rgba(120,120,120,0.07);
+    }
+
+    button[type="submit"]:hover {
+      background: var(--primary-dark);
+    }
+
+    #status {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+      color: #388e3c;
+    }
+
+    @media (max-width: 700px) {
+      .form-card {
+        padding: 16px;
+        margin-top: 20px;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .full-width {
+        grid-column: span 1;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <div class="form-card">
+    <h1>Edit Product</h1>
+    <form id="editForm" enctype="multipart/form-data">
+      <div class="form-grid">
+        <div>
+          <label for="name">Name</label>
+          <input type="text" name="name" required />
+        </div>
+        <div>
+          <label for="brand">Brand</label>
+          <input type="text" name="brand" required />
+        </div>
+        <div>
+          <label for="price">Price</label>
+          <input type="number" name="price" required />
+        </div>
+        <div>
+          <label for="ram">RAM</label>
+          <input type="text" name="ram" required />
+        </div>
+        <div>
+          <label for="storage">Storage</label>
+          <input type="text" name="storage" required />
+        </div>
+        <div>
+          <label for="availability">Availability</label>
+          <select name="availability" required>
+            <option value="1">Available</option>
+            <option value="0">Unavailable</option>
+          </select>
+        </div>
+        <div class="full-width">
+          <label for="images">Upload New Images (Optional)</label>
+          <input type="file" name="images" accept="image/*" multiple />
+        </div>
+        <div class="full-width">
+          <label for="quantity">Quantity</label>
+          <input type="number" name="quantity" required />
+        </div>
+        <div class="full-width">
+          <label for="mainPhoto">Main Photo Index (1 for first image)</label>
+          <input type="number" name="mainPhoto" min="1" value="1" />
+        </div>
+        <div class="full-width">
+          <label for="description">Description</label>
+          <textarea name="description" rows="4" required></textarea>
+        </div>
+      </div>
+      <button type="submit">Update Product</button>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    async function loadProduct() {
+      const res = await fetch(`/api/products`);
+      const products = await res.json();
+      const product = products.find(p => p.productID == productId);
+      if (!product) return;
+
+      document.querySelector('[name="name"]').value = product.name;
+      document.querySelector('[name="brand"]').value = product.brand;
+      document.querySelector('[name="price"]').value = product.price;
+      document.querySelector('[name="ram"]').value = product.ram;
+      document.querySelector('[name="storage"]').value = product.storage;
+      document.querySelector('[name="quantity"]').value = product.quantity;
+      document.querySelector('[name="availability"]').value = product.availability;
+      document.querySelector('[name="mainPhoto"]').value = product.mainPhoto || 1;
+      document.querySelector('[name="description"]').value = product.description || "";
+    }
+
+    loadProduct();
+
+    document.getElementById('editForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      const res = await fetch(`/api/products/${productId}`, {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await res.json();
+      const status = document.getElementById('status');
+      status.textContent = result.message || result.error || "Product updated!";
+      status.style.color = res.ok ? "#388e3c" : "red";
+    };
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $("#header-container").load("header.html", function () {
+      const role = localStorage.getItem("role");
+      if (role === "admin") {
+        document.getElementById("editUsersLink")?.style?.display = "inline-block";
+      }
+    });
+  </script>
+
+</body>
+</html>

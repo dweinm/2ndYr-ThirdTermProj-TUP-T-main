@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --accent: #5a5a5a;
+      --accent-light: #bdbdbd;
+      --accent-dark: #222;
+      --bg: #ededed;
+      --bg-light: #f7f7f7;
+      --bg-dark: #d3d3d3;
+      --text: #222;
+      --light: #fff;
+      --shadow: 0 4px 24px rgba(60,60,60,0.08);
+      --primary: #388e3c;
+      --danger: #ff4d4d;
+      --danger-dark: #cc0000;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background: var(--light, #fff);
+      color: var(--accent-dark, #222);
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 24px rgba(60,60,60,0.08);
+      border-bottom: 1px solid var(--bg-dark, #d3d3d3);
+      border-radius: 0 0 24px 24px;
+      margin-bottom: 0;
+    }
+
+    .navbar .logo {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--accent-dark, #222);
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .navbar .nav-links a {
+      color: var(--accent, #5a5a5a);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.05rem;
+      transition: color 0.2s;
+      padding: 6px 14px;
+      border-radius: 6px;
+    }
+
+    .navbar .nav-links a:hover {
+      color: var(--accent-dark, #222);
+      background: var(--accent-light, #bdbdbd);
+    }
+
+    .navbar .nav-links button {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--bg-dark, #d3d3d3);
+      background: var(--accent, #5a5a5a);
+      color: var(--light, #fff);
+      font-weight: 600;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, border 0.3s;
+      margin-left: 10px;
+    }
+
+    .navbar .nav-links button:hover {
+      background: var(--accent-dark, #222);
+      color: var(--light, #fff);
+      border: 1px solid var(--accent-light, #bdbdbd);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent-dark);
+      margin: 38px 0 18px 0;
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    #cartContainer {
+      max-width: 900px;
+      margin: 0 auto;
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--light);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 0;
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: center;
+      border-bottom: 1px solid var(--bg-dark);
+    }
+
+    th {
+      background: var(--accent);
+      color: var(--light);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: var(--bg-light);
+    }
+
+    .qty-input {
+      width: 60px;
+      padding: 6px;
+      text-align: center;
+      border-radius: 6px;
+      border: 1px solid var(--bg-dark);
+      background: var(--bg-light);
+      font-size: 1rem;
+      color: var(--accent-dark);
+    }
+
+    .btn {
+      padding: 6px 14px;
+      background: var(--danger);
+      color: var(--light);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(120,120,120,0.07);
+    }
+
+    .btn:hover {
+      background: var(--danger-dark);
+    }
+
+    #total {
+      font-weight: bold;
+      font-size: 1.15rem;
+      text-align: right;
+      margin: 24px 0 0 0;
+      color: var(--accent-dark);
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #checkoutBtn {
+      background-color: var(--primary);
+      margin-top: 18px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      padding: 10px 24px;
+      box-shadow: 0 2px 8px rgba(120,120,120,0.07);
+      transition: background 0.2s;
+    }
+
+    #checkoutBtn:hover {
+      background-color: #2e7031;
+    }
+
+    .cart-actions {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: right;
+    }
+
+    @media (max-width: 700px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 18px 14px;
+        border-radius: 0 0 16px 16px;
+      }
+      .navbar .nav-links {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
+        width: 100%;
+      }
+      .navbar .logo {
+        font-size: 1.4rem;
+      }
+      #cartContainer, #total, .cart-actions {
+        max-width: 100%;
+        padding: 0 8px;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      th, td {
+        padding: 8px;
+        font-size: 0.95rem;
+      }
+      #checkoutBtn {
+        width: 100%;
+        margin-top: 12px;
+        padding: 10px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">📦 GadgetGo</div>
+    <div class="nav-links">
+      <a href="home.html">🏠 Home</a>
+      <a href="cart.html">🛒 Cart</a>
+      <a href="createproduct.html">➕ Create Product</a>
+      <a href="viewproduct.html">📋 View Products</a>
+      <a href="admin-users.html" id="editUsersLink" style="display: none;">Edit Users</a>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <h1>🛒 My Cart</h1>
+  <div id="cartContainer"></div>
+  <p id="total"></p>
+  <div class="cart-actions">
+    <button id="checkoutBtn" class="btn">Proceed to Checkout</button>
+  </div>
+
+  <script>
+    function logout() {
+      fetch("/api/logout", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      })
+      .then(() => {
+        localStorage.removeItem("token");
+        alert("You have been logged out");
+        window.location.href = "/login.html";
+      })
+      .catch(() => {
+        alert("Logout failed");
+      });
+    }
+
+    async function loadCart() {
+      const userID = localStorage.getItem("userID");
+      if (!userID) return alert("You are not logged in!");
+
+      const res = await fetch(`/api/cart/${userID}/`);
+      const data = await res.json();
+      const { items, totalAmount } = data;
+
+      if (!items.length) {
+        document.getElementById("cartContainer").innerHTML = "<p>Your cart is empty.</p>";
+        document.getElementById("total").textContent = "";
+        return;
+      }
+
+      let html = `
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Brand</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th>Action</th>
+          </tr>
+      `;
+
+      items.forEach(p => {
+        html += `
+          <tr>
+            <td>${p.name}</td>
+            <td>${p.brand}</td>
+            <td>₱${p.price}</td>
+            <td>
+              <input type="number" class="qty-input" min="1" value="${p.quantity}"
+                onchange="updateQty(${p.cartID}, ${p.productID}, this.value)" />
+            </td>
+            <td>₱${(p.totalItem).toFixed(2)}</td>
+            <td><button class="btn" onclick="removeItem(${p.cartID})">Remove</button></td>
+          </tr>
+        `;
+      });
+
+      html += "</table>";
+      document.getElementById("cartContainer").innerHTML = html;
+      document.getElementById("total").textContent = "Total: ₱" + totalAmount.toFixed(2);
+    }
+
+    function updateQty(cartID, productID, newQty) {
+      fetch('/api/cart/update', {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cartID, quantity: Number(newQty) })
+      })
+      .then(res => res.json())
+      .then(() => loadCart())
+      .catch(err => console.error(err));
+    }
+
+    function removeItem(cartID) {
+      fetch(`/api/cart/delete/${cartID}`, {
+        method: "DELETE"
+      })
+      .then(() => loadCart())
+      .catch(err => console.error(err));
+    }
+
+    document.getElementById("checkoutBtn").addEventListener("click", () => {
+      const userID = localStorage.getItem("userID");
+      if (!userID) return alert("Please log in to checkout.");
+      window.location.href = `/checkout.html?userID=${userID}`;
+    });
+
+    // Show Edit Users link for admin
+    window.onload = function() {
+      const role = localStorage.getItem("role");
+      if (role === "admin") {
+        document.getElementById("editUsersLink").style.display = "inline-block";
+      }
+      loadCart();
+    };
+  </script>
+</body>
+</html>
